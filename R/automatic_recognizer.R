@@ -51,67 +51,44 @@ draw_plots <- function(have_sand = FALSE){
   raw_data <- raw_data[, -which(names(raw_data) == "label")]
   
   ID <- round(runif(4, 1, nrow(raw_data)))
+  plots <- list()
+  names <- c("A", "B", "C", "D")
   
-  sample_data <- na.omit(as.vector(t(raw_data[ID[1], ])))
-  plot_1 <- ggplot(data.frame(ms = c(1:length(sample_data)), 
-                              amplitude = sample_data), 
-                    aes(x = ms, y = amplitude)) +
-    geom_line() +
-    geom_smooth(method = lm) +
-    geom_point() +
-    labs(title = paste0("График амплитуды для наблюдения ID ", ID[1]),
-         x = "Миллисекунда",
-         y = "Амплитуда")
-  
-  sample_data <- na.omit(as.vector(t(raw_data[ID[2], ])))
-  plot_2 <- ggplot(data.frame(ms = c(1:length(sample_data)), 
-                              amplitude = sample_data), 
-                 aes(x = ms, y = amplitude)) +
-    geom_line() +
-    geom_smooth(method = lm) +
-    geom_point() +
-    labs(title = paste0("График амплитуды для наблюдения ID ", ID[2]),
-         x = "Миллисекунда",
-         y = "Амплитуда")
-  
-  sample_data <- na.omit(as.vector(t(raw_data[ID[3], ])))
-  plot_3 <- ggplot(data.frame(ms = c(1:length(sample_data)), 
-                              amplitude = sample_data), 
-                   aes(x = ms, y = amplitude)) +
-    geom_line() +
-    geom_smooth(method = lm) +
-    geom_point() +
-    labs(title = paste0("График амплитуды для наблюдения ID ", ID[3]),
-         x = "Миллисекунда",
-         y = "Амплитуда")
-  
-  sample_data <- na.omit(as.vector(t(raw_data[ID[4], ])))
-  plot_4 <- ggplot(data.frame(ms = c(1:length(sample_data)), 
-                              amplitude = sample_data), 
-                   aes(x = ms, y = amplitude)) +
-    geom_line() +
-    geom_smooth(method = lm) +
-    geom_point() +
-    labs(title = paste0("График амплитуды для наблюдения ID ", ID[4]),
-         x = "Миллисекунда",
-         y = "Амплитуда")
+  for (n_plot in c(1:4)) {
+    sample_data <- na.omit(as.vector(t(raw_data[ID[n_plot], ])))
+    plots[[names[n_plot]]] <- local({
+      name <- names[n_plot]
+      ggplot(data.frame(ms = c(1:length(sample_data)), amplitude = sample_data), 
+             aes(x = ms, y = amplitude)) +
+        geom_line() +
+        geom_smooth(method = lm) +
+        geom_point() +
+        labs(title = paste0("График амплитуды для наблюдения ID ", ID[1]),
+             x = "Миллисекунда",
+             y = "Амплитуда")
+    })
+  }
   
   text <- c("Случайные аудио-сэмплы без песка", 
             "Случайные аудио-сэмплы с песком")
-  figure <- ggarrange(plot_1, plot_2, plot_3, plot_4,
+  figure <- ggarrange(plotlist = plots,
                       labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)
   annotate_figure(
     figure,
-    top = text_grob(text[as.integer(have_sand) + 1], 
-                    color = "red", 
-                    face = "bold", 
-                    size = 14),
-    bottom = text_grob("Исходные данные: \n без предобработки", 
-                       color = "blue",
-                       hjust = 1, x = 1, 
-                       face = "italic", 
-                       size = 10),
+    top = text_grob(
+      text[as.integer(have_sand) + 1], 
+      color = "red", 
+      face = "bold", 
+      size = 14
+    ),
+    bottom = text_grob(
+      "Исходные данные: \n без предобработки", 
+      color = "blue",
+      hjust = 1, x = 1, 
+      face = "italic", 
+      size = 10
+    ),
   )
 }
 
@@ -187,6 +164,7 @@ data_preprocessing <- function(data) {
 preprocessing_data_train <- data_preprocessing(train)
 preprocessing_data_test <- data_preprocessing(test)
 
+
 # Функция для отображения графиков (БПФ)
 draw_fft_plots <- function(have_sand = FALSE){
   preprocessing_data <- preprocessing_data_train
@@ -198,66 +176,45 @@ draw_fft_plots <- function(have_sand = FALSE){
   
   ID <- round(runif(4, 1, nrow(data)))
   
-  sample_data <- na.omit(as.vector(t(data[ID[1], ])))
-  plot_1 <- ggplot(data.frame(ms = c(1:length(sample_data)), 
-                              amplitude = sample_data), 
-                   aes(x = ms, y = amplitude)) +
-    geom_line() +
-    geom_smooth(method = lm) +
-    geom_point() +
-    labs(title = paste0("График амплитуды для наблюдения ID ", ID[1]),
-         x = "Частота",
-         y = "Амплитуда")
+  plots <- list()
+  names <- c("A", "B", "C", "D")
   
-  sample_data <- na.omit(as.vector(t(data[ID[2], ])))
-  plot_2 <- ggplot(data.frame(ms = c(1:length(sample_data)), 
-                              amplitude = sample_data), 
-                   aes(x = ms, y = amplitude)) +
-    geom_line() +
-    geom_smooth(method = lm) +
-    geom_point() +
-    labs(title = paste0("График амплитуды для наблюдения ID ", ID[2]),
-         x = "Частота",
-         y = "Амплитуда")
-  
-  sample_data <- na.omit(as.vector(t(data[ID[3], ])))
-  plot_3 <- ggplot(data.frame(ms = c(1:length(sample_data)), 
-                              amplitude = sample_data), 
-                   aes(x = ms, y = amplitude)) +
-    geom_line() +
-    geom_smooth(method = lm) +
-    geom_point() +
-    labs(title = paste0("График амплитуды для наблюдения ID ", ID[3]),
-         x = "Частота",
-         y = "Амплитуда")
-  
-  sample_data <- na.omit(as.vector(t(data[ID[4], ])))
-  plot_4 <- ggplot(data.frame(ms = c(1:length(sample_data)), 
-                              amplitude = sample_data), 
-                   aes(x = ms, y = amplitude)) +
-    geom_line() +
-    geom_smooth(method = lm) +
-    geom_point() +
-    labs(title = paste0("График амплитуды для наблюдения ID ", ID[4]),
-         x = "Частота",
-         y = "Амплитуда")
+  for (n_plot in c(1:4)) {
+    sample_data <- na.omit(as.vector(t(data[ID[n_plot], ])))
+    plots[[names[n_plot]]] <- local({
+      name <- names[n_plot]
+      ggplot(data.frame(ms = c(1:length(sample_data)), 
+                        amplitude = sample_data), 
+             aes(x = ms, y = amplitude)) +
+        geom_line() +
+        geom_smooth(method = lm) +
+        geom_point() +
+        labs(title = paste0("График амплитуды для наблюдения ID ", ID[1]),
+             x = "Частота",
+             y = "Амплитуда")
+    })
+  }
   
   text <- c("Случайные аудио-сэмплы без песка", 
             "Случайные аудио-сэмплы с песком")
-  figure <- ggarrange(plot_1, plot_2, plot_3, plot_4,
+  figure <- ggarrange(plotlist = plots,
                       labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)
   annotate_figure(
     figure,
-    top = text_grob(text[as.integer(have_sand) + 1], 
-                    color = "red", 
-                    face = "bold", 
-                    size = 14),
-    bottom = text_grob("Предобработанные данные:\n быстрое преобразование Фурье", 
-                       color = "blue",
-                       hjust = 1, x = 1, 
-                       face = "italic", 
-                       size = 10),
+    top = text_grob(
+      text[as.integer(have_sand) + 1], 
+      color = "red", 
+      face = "bold", 
+      size = 14
+    ),
+    bottom = text_grob(
+      "Предобработанные данные:\n быстрое преобразование Фурье", 
+      color = "blue",
+      hjust = 1, x = 1, 
+      face = "italic", 
+      size = 10
+    ),
   )
 }
 
@@ -330,16 +287,6 @@ xgb.plot.importance(
 
 # Предсказывание
 predictions <- predict(xgb_model, Dtest)
-predictions <- as.integer(predictions > 0.4)
-
-# Подсчет метрик
-print_metrics <- function(test_targets, predictions) {
-  print(paste("F1-Score:", F1_Score(test_targets, predictions)))
-  print(paste("Recall:", Recall(test_targets, predictions)))
-  print(paste("Precision:", Precision(test_targets, predictions)))
-  print(paste("ROC-AUC:", AUC(test_targets, predictions)))
-}
-print_metrics(test_targets, predictions)
 
 # Выбор treshold'а
 choose_treshold <- function(test_targets, predictions) {
@@ -356,6 +303,57 @@ choose_treshold <- function(test_targets, predictions) {
     metrics[ind, "Precision"] <- Precision(test_targets, predictions)
     metrics[ind, "ROC-AUC"] <- AUC(test_targets, predictions)
   }
+
+  plots <- list()
+  names <- c("F1-Score", "Recall", "Precision", "ROC-AUC")
+  
+  for (n_plot in c(1:4)) {
+    plots[[names[n_plot]]] <- local({
+      name <- names[n_plot]
+      ggplot(data = metrics, aes(x = metrics$treshold, 
+                                 y = metrics[, n_plot + 1])) +
+        geom_line() +
+        geom_point() +
+        geom_text(
+          label = format(round(metrics[, n_plot + 1], 3), nsmall = 3),
+          nudge_x = 0, 
+          nudge_y = 0.003,
+          check_overlap = F,
+          label.padding=unit(0.55, "lines"),
+          label.size=0.4,
+          color="red"
+        ) +
+        scale_x_continuous(breaks = seq(from = 0.1, to = 0.7, by = 0.1)) +
+        scale_y_continuous(breaks = seq(from = 0.95, to = 0.98, by = 0.01))
+    })
+  }
+  figure <- ggarrange(plotlist = plots,
+                      labels = names,
+                      ncol = 2, nrow = 2)
+  annotate_figure(
+    figure,
+    top = text_grob(
+      "Метрики работы модели", 
+      color = "red", 
+      face = "bold", 
+      size = 14
+    )
+  )
   return(metrics)
 }
-choose_treshold(test_targets, predictions)
+
+metrics <- choose_treshold(test_targets, predictions)
+treshold <- 0.3
+
+# Финальное предсказание на тестовой выборке
+predictions <- as.integer(predictions > treshold)
+
+# Финальный подсчет метрик
+print_metrics <- function(test_targets, predictions) {
+  print(paste("F1-Score:", F1_Score(test_targets, predictions)))
+  print(paste("Recall:", Recall(test_targets, predictions)))
+  print(paste("Precision:", Precision(test_targets, predictions)))
+  print(paste("ROC-AUC:", AUC(test_targets, predictions)))
+}
+
+print_metrics(test_targets, predictions)
